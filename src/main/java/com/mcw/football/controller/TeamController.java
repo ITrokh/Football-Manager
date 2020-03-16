@@ -1,16 +1,18 @@
 package com.mcw.football.controller;
 
-import com.mcw.football.domain.Player;
 import com.mcw.football.domain.Team;
 import com.mcw.football.domain.dto.PlayerResponse;
 import com.mcw.football.domain.dto.PlayerUpdateRequest;
 import com.mcw.football.service.TeamService;
-import org.aspectj.apache.bcel.util.Play;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/team")
@@ -28,7 +30,7 @@ public class TeamController {
 
     @PreAuthorize("hasAuthority('TEAM_LEADER')")
     @PostMapping("/add")
-    public String createTeam(Team team, Model model) {
+    public String createTeam(@Validated Team team, Model model) {
         teamService.createTeam(team);
         model.addAttribute("teams", teamService.getTeamList());
         return "teams";
