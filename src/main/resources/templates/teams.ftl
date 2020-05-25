@@ -8,7 +8,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="page-header">
-                            <h3>Teams</h3>
+                            <h3>Your groups</h3>
                         </div>
                     </div>
                 </div>
@@ -17,7 +17,8 @@
                     <tr>
                         <th>Created date</th>
                         <th>Name</th>
-                        <th>Players</th>
+                        <th>Students in Group</th>
+                        <th>Trainer</th>
 
                     </tr>
                     </thead>
@@ -27,9 +28,10 @@
                             <td>${team.createdDate}</td>
                             <td>${team.name}</td>
                             <td>${team.playerAmount}</td>
+                            <td>${team.leader}</td>
                         <#if isTeamLeader>
-                            <td><a href="/team/${team.id}/players">Fill command to the next match</a></td>
-                            <#else><td><a href="/team/${team.id}/players">See command to the next match</a></td>
+                            <td><a href="/teams/${team.id}/players">Manage group</a></td>
+                            <#else><td><a href="/teams/${team.id}/players">See group participants</a></td>
                         </#if>
                                 </tr>
                     </#list>
@@ -38,7 +40,7 @@
             </div>
     <#if isTeamLeader>
             <div class="col-4">
-                <form action="/team/add" method="post">
+                <form action="/teams/add" method="post">
                     <#--<div class="form-group row">-->
                     <label class="col-form-label">Team name:
                         <input type="text" name="name" class="form-control">

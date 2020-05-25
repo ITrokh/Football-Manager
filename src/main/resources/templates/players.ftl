@@ -26,11 +26,11 @@
                     <tbody>
                     <#list players as player>
                         <tr>
-                            <td><a href="/team/player/${player.id}">${player.name}</a></td>
-                            <td>${player.position}</td>
+                            <td><a href="/teams/player/${player.id}">${player.name}</a></td>
+                            <td>${player.group}</td>
                         <#if isTeamLeader>
                             <td>
-                                <a href="/team/${teamId}/remove_player/${player.id}">
+                                <a href="/teams/${teamId}/remove_player/${player.id}">
                                     Remove
                                 </a>
                             </td>
@@ -53,10 +53,7 @@
                     <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Team</th>
-                        <th>State</th>
-                        <th>Position</th>
-                        <th>Salary</th>
+                        <th>Group</th>
 
                         <th>Edit</th>
                     </tr>
@@ -64,14 +61,11 @@
                     <tbody>
                     <#list possiblePlayers as player>
                         <tr>
-                            <td><a href="/team/player/${player.id}">${player.name}</a></td>
-                            <td>${player.teamName}</td>
-                            <td>${player.state}</td>
-                            <td>${player.position}</td>
-                            <td>${player.salary} mln $</td>
+                            <td>${player.name}</td>
+                            <td>${player.group}</td>
 
                             <td>
-                                <a href="/team/${teamId}/add_player/${player.id}">
+                                <a href="/teams/${teamId}/add_player/${player.id}">
                                     Add to team
                                 </a>
                             </td>

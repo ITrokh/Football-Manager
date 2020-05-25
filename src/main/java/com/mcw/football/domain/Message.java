@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "DP_MESSAGE")
 public class Message {
 
     @Id
@@ -22,7 +23,7 @@ public class Message {
     @Length(max = 255, message = "It's to long, more then 255 symbols")
     private String tag;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User author;
 
@@ -30,8 +31,8 @@ public class Message {
 
     private String chatType;
 
-    @ManyToMany
-    @JoinTable(name = "message_likes",
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "DP_MESSAGE_LIKES",
                joinColumns = {@JoinColumn(name = "message_id")},
                inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> likes = new HashSet<>();

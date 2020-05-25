@@ -6,7 +6,8 @@ import com.mcw.football.domain.dto.ChatMessageDto;
 import com.mcw.football.domain.dto.MessageDTO;
 import com.mcw.football.repository.MessageRepository;
 import com.mcw.football.service.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.mcw.football.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,14 +33,14 @@ import java.util.Set;
 import java.util.UUID;
 
 @Controller
+@RequiredArgsConstructor
 public class MessageController {
 
-    @Autowired
-    private MessageRepository messageRepository;
 
-    @Autowired
-    private MessageService messageService;
+    private final MessageRepository messageRepository;
 
+    private final MessageService messageService;
+    private final UserService userService;
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -90,7 +91,7 @@ public class MessageController {
         return "main";
     }
 
-    private void saveFile(@Valid Message message, @RequestParam("file") MultipartFile file) throws IOException {
+    private void saveFile(Message message, @RequestParam("file") MultipartFile file) throws IOException {
         if (file != null && !file.getOriginalFilename().isEmpty()) {
             File uploadDir = new File(uploadPath);
 
@@ -112,15 +113,15 @@ public class MessageController {
                                Model model,
                                @RequestParam(required = false) Message message,
                                @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageble) {
+        author=userService.getUserById(author.getId());
         Page<MessageDTO> page = messageService.messageListForUser(pageble, currentUser, author);
-
         model.addAttribute("userChannel", author);
         model.addAttribute("subscriptionsCount", author.getSubscriptions().size());
         model.addAttribute("subscribersCount", author.getSubscribers().size());
-        model.addAttribute("isSubscriber", author.getSubscribers().contains(currentUser));
+        model.addAttribute("isSubscriber", author.getSubscribers().stream().anyMatch(user->user.getId().equals(currentUser.getId())));
         model.addAttribute("page", page);
         model.addAttribute("message", message);
-        model.addAttribute("isCurrentUser", currentUser.equals(author) ||currentUser.isAdmin());
+        model.addAttribute("isCurrentUser", currentUser.getId().equals(author.getId()));
         model.addAttribute("url", "/user-messages/" + author.getId());
 
         return "userMessages";
@@ -158,6 +159,7 @@ public class MessageController {
             RedirectAttributes redirectAttributes,
             @RequestHeader(required = false) String referer
     ) {
+       currentUser= userService.getUserById(currentUser.getId());
         Set<User> likes = message.getLikes();
 
         if (likes.contains(currentUser)) {

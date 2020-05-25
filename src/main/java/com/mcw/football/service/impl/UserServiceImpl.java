@@ -1,9 +1,10 @@
 package com.mcw.football.service.impl;
 
-import com.mcw.football.domain.Player;
+import com.google.common.base.Strings;
 import com.mcw.football.domain.Role;
+import com.mcw.football.domain.Student;
 import com.mcw.football.domain.User;
-import com.mcw.football.repository.PlayerRepository;
+import com.mcw.football.repository.StudentRepository;
 import com.mcw.football.repository.UserRepository;
 import com.mcw.football.service.MailSender;
 import com.mcw.football.service.UserService;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +31,7 @@ public class UserServiceImpl implements UserService {
     private MailSender mailSender;
 
     @Autowired
-    private PlayerRepository playerRepository;
+    private StudentRepository studentRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -58,30 +61,32 @@ public class UserServiceImpl implements UserService {
         user.setActivationCode(UUID.randomUUID().toString());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        if (user.getRoles() != null && user.getRoles().contains(Role.PLAYER)) {
-            createPlayer(user);
+        if (user.getRoles() != null && user.getRoles().contains(Role.STUDENT)) {
+            createStudent(user);
         }
         sendMessage(userRepository.saveAndFlush(user));
         return true;
     }
 
-    private void createPlayer(User user) {
-        Player player=playerRepository.findByUserId(user.getId());
-        if(player==null) {
-            playerRepository.saveAndFlush(new Player(user));
+    private void createStudent(User user) {
+        Student student= studentRepository.findByUserId(user.getId());
+        if(student==null) {
+            studentRepository.saveAndFlush(new Student(user));
+        }else{
+            studentRepository.saveAndFlush(user.getStudent());
         }
     }
-    private void deletePlayer(User user) {
-        Player player=playerRepository.findByUserId(user.getId());
-        if(player!=null) {
-            playerRepository.deleteById(player.getId());
+    private void deleteStudent(User user) {
+        Student student= studentRepository.findByUserId(user.getId());
+        if(student!=null) {
+            studentRepository.deleteById(student.getId());
         }
     }
     private void sendMessage(User user) {
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format(
                     "Hello, %s! \n" +
-                            "Welcome to MYApp. Please, visit next link: http://localhost:8080/activate/%s",
+                            "Welcome to My diploma app. Please, visit next link: http://localhost:8081/activate/%s",
                     user.getUsername(),
                     user.getActivationCode()
             );
@@ -117,9 +122,22 @@ public class UserServiceImpl implements UserService {
                 user.getRoles().add(Role.valueOf(key));
             }
         }
-        if(user.getRoles().contains(Role.PLAYER)) {
-            createPlayer(user);
-        }else{ deletePlayer(user);
+        if(user.getStudent()!=null){
+            String group = form.get("group");
+            if(group!=null) {
+                String groupRegex = "^\\w{2}-\\w";
+                Pattern pattern = Pattern.compile(groupRegex);
+                Matcher matcher = pattern.matcher(group);
+                if(matcher.find()){
+                    user.getStudent().setGroup(group);
+                }else{
+                    user.getStudent().setGroup("");
+                }
+            }
+        }
+        if(user.getRoles().contains(Role.STUDENT)) {
+            createStudent(user);
+        }else{ deleteStudent(user);
         }
         userRepository.save(user);
     }
@@ -128,7 +146,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow(NullPointerException::new);
     }
 
-    public void updateProfile(User user, String password, String email) {
+    public void updateProfile(User user, String password, String email, String username) {
         String userEmail = user.getEmail();
 
         boolean isEmailChanged = (email != null && !email.equals(userEmail)) ||
@@ -141,7 +159,9 @@ public class UserServiceImpl implements UserService {
                 user.setActivationCode(UUID.randomUUID().toString());
             }
         }
-
+        if(!Strings.isNullOrEmpty(username) && !username.equals(user.getUsername())){
+            user.setUsername(username);
+        }
         if (!StringUtils.isEmpty(password)) {
             user.setPassword(password);
         }
@@ -154,11 +174,13 @@ public class UserServiceImpl implements UserService {
     }
 
     public void subscribe(User currentUser, User user) {
+        currentUser=getUserById(currentUser.getId());
         user.getSubscribers().add(currentUser);
         userRepository.save(user);
     }
 
     public void unsubscribe(User currentUser, User user) {
+        currentUser=getUserById(currentUser.getId());
         user.getSubscribers().remove(currentUser);
         userRepository.save(user);
     }

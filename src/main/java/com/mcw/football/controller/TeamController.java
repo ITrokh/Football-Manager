@@ -1,27 +1,28 @@
 package com.mcw.football.controller;
 
 import com.mcw.football.domain.Team;
-import com.mcw.football.domain.dto.PlayerResponse;
-import com.mcw.football.domain.dto.PlayerUpdateRequest;
+import com.mcw.football.domain.User;
+import com.mcw.football.domain.dto.StudentResponse;
+import com.mcw.football.domain.dto.StudentUpdateRequest;
 import com.mcw.football.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Controller
-@RequestMapping("/team")
+@RequestMapping("/teams")
 public class TeamController {
 
     @Autowired
     private TeamService teamService;
 
-    @PreAuthorize("hasAnyAuthority('TEAM_LEADER','PLAYER')")
+    @PreAuthorize("hasAnyAuthority('TEAM_LEADER','STUDENT')")
     @GetMapping
     public String getTeamList(Model model) {
         model.addAttribute("teams", teamService.getTeamList());
@@ -30,20 +31,21 @@ public class TeamController {
 
     @PreAuthorize("hasAuthority('TEAM_LEADER')")
     @PostMapping("/add")
-    public String createTeam(@Validated Team team, Model model) {
-        teamService.createTeam(team);
+    public String createTeam(@AuthenticationPrincipal User user,
+                             @Validated Team team, Model model) {
+        teamService.createTeam(team, user);
         model.addAttribute("teams", teamService.getTeamList());
         return "teams";
     }
 
-    @PreAuthorize("hasAnyAuthority('TEAM_LEADER','PLAYER')")
+    @PreAuthorize("hasAnyAuthority('TEAM_LEADER','STUDENT')")
     @GetMapping("/{teamId}/players")
     public String getPlayerList(Model model, @PathVariable Long teamId) {
        fillModel(teamId, model);
         return "players";
     }
 
-    @PreAuthorize("hasAuthority('TEAM_LEADER')")
+    @PreAuthorize("hasAnyAuthority('TEAM_LEADER','ADMIN')")
     @GetMapping("/{teamId}/remove_player/{playerId}")
     public String removePlayerFromTeam(@PathVariable Long teamId, @PathVariable Long playerId, Model model) {
         teamService.removePlayerFromTeam(playerId);
@@ -51,24 +53,24 @@ public class TeamController {
         return "players";
     }
 
-    @PreAuthorize("hasAuthority('TEAM_LEADER')")
+    @PreAuthorize("hasAnyAuthority('TEAM_LEADER','ADMIN')")
     @GetMapping("/{teamId}/add_player/{playerId}")
     public String addPlayerToTeam(@PathVariable Long teamId, @PathVariable Long playerId, Model model) {
-        teamService.addPlayerToAnotherTeam(teamId, playerId);
+        teamService.addPStudentToAnotherTeam(teamId, playerId);
         fillModel(teamId, model);
         return "players";
     }
 
     @GetMapping("/player/{playerId}")
     public String getPlayerProfile(@PathVariable Long playerId, Model model) {
-        PlayerResponse player = teamService.getPlayer(playerId);
+        StudentResponse player = teamService.getPlayer(playerId);
         model.addAttribute("player", player);
         return "player";
     }
 
     @PostMapping("/player/{playerId}")
-    public String updatePlayerProfile(@PathVariable Long playerId, PlayerUpdateRequest updatePlayer, Model model) {
-        PlayerResponse player = teamService.updatePlayer(playerId, updatePlayer);
+    public String updatePlayerProfile(@PathVariable Long playerId, @RequestParam Map<String, String> form, StudentUpdateRequest updatePlayer, Model model) {
+        StudentResponse player = teamService.updatePlayer(playerId, updatePlayer, form);
         model.addAttribute("player", player);
         return "player";
     }

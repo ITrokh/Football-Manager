@@ -1,6 +1,8 @@
 <#import "parts/common.ftl" as com>
+<#include "parts/security.ftl">
 
 <@com.page false>
+
     <h3>${userChannel.username}</h3>
     <#if !isCurrentUser>
         <#if isSubscriber>

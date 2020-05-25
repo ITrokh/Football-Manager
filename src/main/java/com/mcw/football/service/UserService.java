@@ -30,7 +30,7 @@ public interface UserService extends UserDetailsService {
 
     User getUserById(Long id);
 
-    void updateProfile(User user, String password, String email);
+    void updateProfile(User user, String password, String email, String username);
 
     void subscribe(User currentUser, User user);
 

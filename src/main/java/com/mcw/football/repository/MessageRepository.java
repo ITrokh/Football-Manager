@@ -42,9 +42,8 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             "   sum(case when ml = :user then 1 else 0 end) > 0" +
             ") " +
             "from Message m left join m.likes ml " +
-            "where m.author = :author " +
             "group by m")
-    Page<MessageDTO> findByUser(Pageable pageable, @Param("author") User author, @Param("user") User user);
+    Page<MessageDTO> findAllWhereAuthor(Pageable pageable, @Param("user") User user);
 
     List<Message> findAllByChatTypeOrderById(String chatType, Pageable pageable);
 }

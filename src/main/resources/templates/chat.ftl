@@ -23,7 +23,7 @@
             </div>
         </div>
         <#--какая роль для второго чата-->
-        <#if isPlayer || isTeamLeader>
+        <#if isStudent || isTeamLeader>
         <div class="col-6">
             <div id="username-page-team">
                 <div class="username-page-container_team">

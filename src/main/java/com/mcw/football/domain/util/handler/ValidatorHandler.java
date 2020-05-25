@@ -32,7 +32,7 @@ public class ValidatorHandler implements Validator {
         try {
             ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
             provider.addIncludeFilter(new AnnotationTypeFilter(DiplomaValidating.class));
-            Set<BeanDefinition> bds = provider.findCandidateComponents("com.smiddle");
+            Set<BeanDefinition> bds = provider.findCandidateComponents("com.mcw.football");
             for (BeanDefinition bd : bds) {
                 Class<?> validatorClass = Class.forName(bd.getBeanClassName());
                 try {

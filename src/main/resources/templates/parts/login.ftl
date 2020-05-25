@@ -42,6 +42,19 @@
                 </div>
             </div>
             <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Your full name:</label>
+                <div class="col-sm-6">
+                    <input type="text" name="fullName"
+                           class="form-control ${(fullNameError??)?string('is-invalid', '')}"
+                           placeholder="Input your full name" />
+                    <#if fullNameError??>
+                        <div class="invalid-feedback">
+                            ${fullNameError}
+                        </div>
+                    </#if>
+                </div>
+            </div>
+            <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Email:</label>
                 <div class="col-sm-6">
                     <input type="email" name="email" value="<#if user??>${user.email}</#if>"
@@ -57,7 +70,7 @@
             <div class="form-group row">
                 <#if isAdmin>
                 <label class="col-sm-2 col-form-label">Choose Role:</label>
-                <div class="col-sm-6 form-check"">
+                <div class="col-sm-6 form-check">
                 <#list roles as role>
                     <div>
                         <input type="checkbox" class="form-check-input" name="roles" value="${role}" id="${role}"/>
@@ -69,7 +82,7 @@
             </div>
         </#if>
         <input type="hidden" name="_csrf" value="${_csrf.token}" />
-        <a href="/registration">Add new user</a>
+        <a href="/registration">Registration</a>
         <button class="btn btn-primary" type="submit"><#if isRegisterForm>Create<#else>Log In</#if></button>
     </form>
 </#macro>

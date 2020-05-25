@@ -9,7 +9,7 @@
         isAdmin=user.isAdmin()
         isUser=user.isUser()
         isTeamLeader=user.isTeamLeader()
-        isPlayer=user.isPlayer()
+        isStudent=user.isStudent()
     >
 <#else>
     <#assign
@@ -18,7 +18,7 @@
     isAdmin=false
     isUser=false
     isTeamLeader=false
-    isPlayer=false
+    isStudent=false
     >
 
 </#if>

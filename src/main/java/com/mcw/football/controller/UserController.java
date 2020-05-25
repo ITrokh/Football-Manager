@@ -8,6 +8,7 @@ package com.mcw.football.controller;
 
 import com.mcw.football.domain.Role;
 import com.mcw.football.domain.User;
+import com.mcw.football.domain.dto.StudentResponse;
 import com.mcw.football.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,7 +46,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public String userSave(@RequestParam String username,
-                           @RequestParam Map<String, String> form, //так как перерменное количество полей,
+                           @RequestParam Map<String, String> form, //так как переменное количество полей,
                            // они будут все попадать в форму, но придут те, которые отмечены флажком и каждый раз будет разное количество полей
                            @RequestParam("userId") User user){
         userService.saveUser(user, username, form);
@@ -53,17 +54,21 @@ public class UserController {
     }
 
     @GetMapping("profile")
-    public String gerProfile(Model model, @AuthenticationPrincipal User user){
+    public String getProfile(Model model, @AuthenticationPrincipal User user){
         model.addAttribute("username",user.getUsername());
         model.addAttribute("email",user.getEmail());
+        if(user.isStudent()){
+            model.addAttribute("student",new StudentResponse(user.getStudent()));
+        }
         return "profile";
     }
 
     @PostMapping("profile")
     public String updateProfile(@AuthenticationPrincipal User user,
                                 @RequestParam String password,
-                                @RequestParam String email) {
-        userService.updateProfile(user, password, email);
+                                @RequestParam String email,
+                                @RequestParam String username) {
+        userService.updateProfile(user, password, email, username);
        return "redirect:/user/profile";
     }
 
