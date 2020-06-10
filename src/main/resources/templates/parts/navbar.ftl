@@ -11,7 +11,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="/">Home</a>
             </li>
-            <#if user??>
+            <#if user?? && user.getRoles()??>
                 <li class="nav-item">
                     <a class="nav-link" href="/chat">Chat</a>
                 </li>

@@ -2,8 +2,8 @@ package com.mcw.football.controller;
 
 import com.mcw.football.domain.Team;
 import com.mcw.football.domain.User;
-import com.mcw.football.domain.dto.StudentResponse;
-import com.mcw.football.domain.dto.StudentUpdateRequest;
+import com.mcw.football.domain.dto.StudentResponseDto;
+import com.mcw.football.domain.dto.StudentUpdateRequestDto;
 import com.mcw.football.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,8 +24,9 @@ public class TeamController {
 
     @PreAuthorize("hasAnyAuthority('TEAM_LEADER','STUDENT')")
     @GetMapping
-    public String getTeamList(Model model) {
-        model.addAttribute("teams", teamService.getTeamList());
+    public String getTeamList(Model model,
+                              @AuthenticationPrincipal User user) {
+        model.addAttribute("teams", teamService.getTeamList(user));
         return "teams";
     }
 
@@ -34,50 +35,50 @@ public class TeamController {
     public String createTeam(@AuthenticationPrincipal User user,
                              @Validated Team team, Model model) {
         teamService.createTeam(team, user);
-        model.addAttribute("teams", teamService.getTeamList());
+        model.addAttribute("teams", teamService.getTeamList(user));
         return "teams";
     }
 
     @PreAuthorize("hasAnyAuthority('TEAM_LEADER','STUDENT')")
-    @GetMapping("/{teamId}/players")
-    public String getPlayerList(Model model, @PathVariable Long teamId) {
+    @GetMapping("/{teamId}/students")
+    public String getStudentList(Model model, @PathVariable Long teamId) {
        fillModel(teamId, model);
-        return "players";
+        return "students";
     }
 
     @PreAuthorize("hasAnyAuthority('TEAM_LEADER','ADMIN')")
-    @GetMapping("/{teamId}/remove_player/{playerId}")
-    public String removePlayerFromTeam(@PathVariable Long teamId, @PathVariable Long playerId, Model model) {
-        teamService.removePlayerFromTeam(playerId);
+    @GetMapping("/{teamId}/remove_student/{studentId}")
+    public String removeStudentFromTeam(@PathVariable Long teamId, @PathVariable Long studentId, Model model) {
+        teamService.removeStudentFromTeam(studentId);
         fillModel(teamId, model);
-        return "players";
+        return "students";
     }
 
     @PreAuthorize("hasAnyAuthority('TEAM_LEADER','ADMIN')")
-    @GetMapping("/{teamId}/add_player/{playerId}")
-    public String addPlayerToTeam(@PathVariable Long teamId, @PathVariable Long playerId, Model model) {
-        teamService.addPStudentToAnotherTeam(teamId, playerId);
+    @GetMapping("/{teamId}/add_student/{studentId}")
+    public String addStudentToTeam(@PathVariable Long teamId, @PathVariable Long studentId, Model model) {
+        teamService.addStudentToAnotherTeam(teamId, studentId);
         fillModel(teamId, model);
-        return "players";
+        return "students";
     }
 
-    @GetMapping("/player/{playerId}")
-    public String getPlayerProfile(@PathVariable Long playerId, Model model) {
-        StudentResponse player = teamService.getPlayer(playerId);
-        model.addAttribute("player", player);
-        return "player";
+    @GetMapping("/student/{studentId}")
+    public String getStudentProfile(@PathVariable Long studentId, Model model) {
+        StudentResponseDto student = teamService.getStudent(studentId);
+        model.addAttribute("student", student);
+        return "student";
     }
 
-    @PostMapping("/player/{playerId}")
-    public String updatePlayerProfile(@PathVariable Long playerId, @RequestParam Map<String, String> form, StudentUpdateRequest updatePlayer, Model model) {
-        StudentResponse player = teamService.updatePlayer(playerId, updatePlayer, form);
-        model.addAttribute("player", player);
-        return "player";
+    @PostMapping("/student/{studentId}")
+    public String updateStudentProfile(@PathVariable Long studentId, @RequestParam Map<String, String> form, StudentUpdateRequestDto updateStudent, Model model) {
+        StudentResponseDto student = teamService.updateStudent(studentId, updateStudent, form);
+        model.addAttribute("student", student);
+        return "student";
     }
 
     private void fillModel(Long teamId, Model model) {
-        model.addAttribute("players", teamService.getPlayersByTeamId(teamId));
-        model.addAttribute("possiblePlayers", teamService.getAllPlayersWhichAreNotInTeam(teamId));
+        model.addAttribute("students", teamService.getStudentByTeamId(teamId));
+        model.addAttribute("possibleStudents", teamService.getAllStudentsWhichAreNotInTeam(teamId));
         model.addAttribute("teamId", teamId);
     }
 }

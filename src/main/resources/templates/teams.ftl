@@ -19,7 +19,7 @@
                         <th>Name</th>
                         <th>Students in Group</th>
                         <th>Trainer</th>
-
+                        <th>Edit</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -27,11 +27,11 @@
                         <tr>
                             <td>${team.createdDate}</td>
                             <td>${team.name}</td>
-                            <td>${team.playerAmount}</td>
+                            <td>${team.studentAmount}</td>
                             <td>${team.leader}</td>
                         <#if isTeamLeader>
-                            <td><a href="/teams/${team.id}/players">Manage group</a></td>
-                            <#else><td><a href="/teams/${team.id}/players">See group participants</a></td>
+                            <td><a href="/teams/${team.id}/students">Manage group</a></td>
+                            <#else><td><a href="/teams/${team.id}/students">See group participants</a></td>
                         </#if>
                                 </tr>
                     </#list>

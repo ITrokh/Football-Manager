@@ -1,6 +1,6 @@
 package com.mcw.football.service.impl;
 
-import com.mcw.football.service.MailSender;
+import com.mcw.football.service.MailSenderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MailSenderImpl implements MailSender {
+public class MailSenderServiceImpl implements MailSenderService {
 
     private final JavaMailSender mailSender;
 

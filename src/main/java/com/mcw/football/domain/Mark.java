@@ -20,7 +20,7 @@ public class Mark {
 
     private LocalDate createdDate;
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "STUDENT_ID", foreignKey = @ForeignKey(name = "FK_MARK_USER_ID"), nullable = false)
     private Student student;
 

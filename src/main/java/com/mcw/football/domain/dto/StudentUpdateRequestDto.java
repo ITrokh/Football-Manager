@@ -3,7 +3,7 @@ package com.mcw.football.domain.dto;
 import lombok.Data;
 
 @Data
-public class StudentUpdateRequest {
+public class StudentUpdateRequestDto {
 
     private String name;
     private String state;

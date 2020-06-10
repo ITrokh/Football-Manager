@@ -2,9 +2,9 @@ package com.mcw.football.service;
 
 import com.mcw.football.domain.Team;
 import com.mcw.football.domain.User;
-import com.mcw.football.domain.dto.StudentResponse;
-import com.mcw.football.domain.dto.StudentUpdateRequest;
-import com.mcw.football.domain.dto.TeamResponse;
+import com.mcw.football.domain.dto.StudentResponseDto;
+import com.mcw.football.domain.dto.StudentUpdateRequestDto;
+import com.mcw.football.domain.dto.TeamResponseDto;
 
 import java.util.List;
 import java.util.Map;
@@ -13,17 +13,17 @@ public interface TeamService {
 
     void createTeam(Team team, User user);
 
-    List<TeamResponse> getTeamList();
+    List<TeamResponseDto> getTeamList(User user);
 
-    List<StudentResponse> getPlayersByTeamId(Long teamId);
+    List<StudentResponseDto> getStudentByTeamId(Long teamId);
 
-    List<StudentResponse> getAllPlayersWhichAreNotInTeam(Long teamId);
+    List<StudentResponseDto> getAllStudentsWhichAreNotInTeam(Long teamId);
 
-    void addPStudentToAnotherTeam(Long teamId, Long playerId);
+    void addStudentToAnotherTeam(Long teamId, Long studentId);
 
-    void removePlayerFromTeam(Long playerId);
+    void removeStudentFromTeam(Long studentId);
 
-    StudentResponse getPlayer(Long playerId);
+    StudentResponseDto getStudent(Long studentId);
 
-    StudentResponse updatePlayer(Long playerId, StudentUpdateRequest updatePlayer, Map<String, String> form);
+    StudentResponseDto updateStudent(Long studentId, StudentUpdateRequestDto updateStudent, Map<String, String> form);
 }

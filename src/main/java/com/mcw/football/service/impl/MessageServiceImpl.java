@@ -9,7 +9,6 @@ import com.mcw.football.service.MessageService;
 import com.mcw.football.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,11 +34,12 @@ public class MessageServiceImpl implements MessageService {
     }
     @Override
     public Page<MessageDTO> messageListForUser(Pageable pageble, User currentUser, User author) {
-        List<Message> all = messageRepository.findAll();
+        /*List<Message> all = messageRepository.findAll();
         List<MessageDTO> authorsMessages = all.stream().filter(message -> message.getAuthor().getId().equals(currentUser.getId()))
                 .map(message -> new MessageDTO(message, (long) message.getLikes().size(), message.getLikes().stream()
                 .anyMatch(liKe -> liKe.getId().equals(currentUser.getId())))).collect(Collectors.toList());
-        return new PageImpl<>(authorsMessages, pageble, authorsMessages.size());
+        return new PageImpl<>(authorsMessages, pageble, authorsMessages.size());*/
+        return messageRepository.findAllWhereAuthor(pageble,currentUser,author);
     }
     @Override
     public Message saveMessage(ChatMessageDto messageDto) {

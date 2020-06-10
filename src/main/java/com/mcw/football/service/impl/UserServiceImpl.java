@@ -6,7 +6,7 @@ import com.mcw.football.domain.Student;
 import com.mcw.football.domain.User;
 import com.mcw.football.repository.StudentRepository;
 import com.mcw.football.repository.UserRepository;
-import com.mcw.football.service.MailSender;
+import com.mcw.football.service.MailSenderService;
 import com.mcw.football.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private MailSender mailSender;
+    private MailSenderService mailSenderService;
 
     @Autowired
     private StudentRepository studentRepository;
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setActivationCode(UUID.randomUUID().toString());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
+        user=userRepository.save(user);
         if (user.getRoles() != null && user.getRoles().contains(Role.STUDENT)) {
             createStudent(user);
         }
@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
                     user.getActivationCode()
             );
 
-            mailSender.send(user.getEmail(), "Activation code", message);
+            mailSenderService.send(user.getEmail(), "Activation code", message);
         }
     }
 
@@ -157,13 +157,14 @@ public class UserServiceImpl implements UserService {
 
             if (!StringUtils.isEmpty(email)) {
                 user.setActivationCode(UUID.randomUUID().toString());
+                user.setActive(false);
             }
         }
         if(!Strings.isNullOrEmpty(username) && !username.equals(user.getUsername())){
             user.setUsername(username);
         }
         if (!StringUtils.isEmpty(password)) {
-            user.setPassword(password);
+            user.setPassword(passwordEncoder.encode(password));
         }
 
         userRepository.save(user);

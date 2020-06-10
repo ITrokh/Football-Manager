@@ -5,18 +5,18 @@ import lombok.Data;
 
 import java.time.LocalDate;
 @Data
-public class TeamResponse {
+public class TeamResponseDto {
     private Long id;
     private String name;
     private LocalDate createdDate;
-    private Integer playerAmount;
+    private Integer studentAmount;
     private String leader;
 
-    public TeamResponse(Team team, int playerAmount) {
+    public TeamResponseDto(Team team, int studentAmount) {
         this.id = team.getId();
         this.name = team.getName();
         this.createdDate = team.getCreatedDate();
-        this.playerAmount = playerAmount;
+        this.studentAmount = studentAmount;
         this.leader=team.getLeader().getFullName();
     }
 }

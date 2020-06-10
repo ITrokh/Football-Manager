@@ -9,7 +9,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="page-header">
-                            <h3>Players in team</h3>
+                            <h3>Students in group</h3>
                         </div>
                     </div>
                 </div>
@@ -24,13 +24,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <#list players as player>
+                    <#list students as student>
                         <tr>
-                            <td><a href="/teams/player/${player.id}">${player.name}</a></td>
-                            <td>${player.group}</td>
+                            <td><a href="/teams/student/${student.id}">${student.name}</a></td>
+                            <td>${student.group}</td>
                         <#if isTeamLeader>
                             <td>
-                                <a href="/teams/${teamId}/remove_player/${player.id}">
+                                <a href="/teams/${teamId}/remove_student/${student.id}">
                                     Remove
                                 </a>
                             </td>
@@ -45,7 +45,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="page-header">
-                            <h3>Posible players</h3>
+                            <h3>Students without group</h3>
                         </div>
                     </div>
                 </div>
@@ -59,13 +59,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <#list possiblePlayers as player>
+                    <#list possibleStudents as student>
                         <tr>
-                            <td>${player.name}</td>
-                            <td>${player.group}</td>
+                            <td>${student.name}</td>
+                            <td>${student.group}</td>
 
                             <td>
-                                <a href="/teams/${teamId}/add_player/${player.id}">
+                                <a href="/teams/${teamId}/add_student/${student.id}">
                                     Add to team
                                 </a>
                             </td>

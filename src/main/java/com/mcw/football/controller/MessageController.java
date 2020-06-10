@@ -59,7 +59,7 @@ public class MessageController {
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
         model.addAttribute("filter", filter);
-        return "main";
+        return "messages";
     }
 
     @PostMapping("/main")
@@ -88,7 +88,7 @@ public class MessageController {
         model.addAttribute("url", "/main/" + user.getId());
         model.addAttribute("page", page);
 
-        return "main";
+        return "messages";
     }
 
     private void saveFile(Message message, @RequestParam("file") MultipartFile file) throws IOException {

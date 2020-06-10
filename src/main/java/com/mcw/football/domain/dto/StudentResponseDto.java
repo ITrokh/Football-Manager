@@ -7,24 +7,21 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class StudentResponse {
+public class StudentResponseDto {
 
     private Long id;
     private String name;
     private String userName;
     private String group;
     private Long teamId;
-    private Double salary;
-    private String state;
-    private String position;
     private List<Mark> marks;
     private Integer total;
-    public StudentResponse(String name, Long id) {
+    public StudentResponseDto(String name, Long id) {
         this.name = name;
         this.id = id;
     }
 
-    public StudentResponse(Student student) {
+    public StudentResponseDto(Student student) {
         this.id = student.getId();
         this.name = student.getUser().getFullName();
         this.group=student.getGroup();

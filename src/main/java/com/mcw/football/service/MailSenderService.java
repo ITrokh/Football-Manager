@@ -9,7 +9,7 @@ package com.mcw.football.service;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface MailSender {
+public interface MailSenderService {
 
     void send(String emailTo, String subject, String message);
 }

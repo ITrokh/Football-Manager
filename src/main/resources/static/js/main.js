@@ -1,6 +1,6 @@
 'use strict';
 
-
+//debugger;
 var usernamePage = document.querySelector('#username-page');
 var usernamePageTeam = document.querySelector('#username-page-team');
 

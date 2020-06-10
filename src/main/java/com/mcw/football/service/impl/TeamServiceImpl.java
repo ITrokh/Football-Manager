@@ -4,9 +4,9 @@ import com.mcw.football.domain.Mark;
 import com.mcw.football.domain.Student;
 import com.mcw.football.domain.Team;
 import com.mcw.football.domain.User;
-import com.mcw.football.domain.dto.StudentResponse;
-import com.mcw.football.domain.dto.StudentUpdateRequest;
-import com.mcw.football.domain.dto.TeamResponse;
+import com.mcw.football.domain.dto.StudentResponseDto;
+import com.mcw.football.domain.dto.StudentUpdateRequestDto;
+import com.mcw.football.domain.dto.TeamResponseDto;
 import com.mcw.football.domain.util.CommonMethods;
 import com.mcw.football.repository.MarkRepository;
 import com.mcw.football.repository.StudentRepository;
@@ -15,6 +15,7 @@ import com.mcw.football.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,62 +35,68 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public void createTeam(Team team, User user) {
         team.setLeader(user);
+        team.setCreatedDate(LocalDate.now());
         teamRepository.saveAndFlush(team);
     }
     @Override
-    public List<TeamResponse> getTeamList() {
+    @Transactional
+    public List<TeamResponseDto> getTeamList(User user) {
         List<Team> teams = teamRepository.findAll();
-
-        List<TeamResponse> response = new ArrayList<>();
+        if(user.isTeamLeader()){
+            teams.removeIf(team -> !team.getLeader().getId().equals(user.getId()));
+        }else{
+            teams.removeIf(team -> team.getStudentList().stream().noneMatch(student -> student.getUser().getId().equals(user.getId())));
+        }
+        List<TeamResponseDto> response = new ArrayList<>();
         teams.forEach(team -> {
             if(team.getStudentList()==null){
                 team.setStudentList(new ArrayList<>());
             }
-            response.add(new TeamResponse(team, team.getStudentList().size()));
+            response.add(new TeamResponseDto(team, team.getStudentList().size()));
         });
 
         return response;
     }
     @Override
-    public List<StudentResponse> getPlayersByTeamId(Long teamId) {
+    public List<StudentResponseDto> getStudentByTeamId(Long teamId) {
         List<Student> allByTeamId = studentRepository.findAllByTeamId(teamId);
         allByTeamId.forEach(student ->student.setMarks(student.getMarks().stream()
                 .filter(CommonMethods.distinctByKey(Mark::getId)).collect(Collectors.toList())));
-        List<StudentResponse> response = new ArrayList<>();
-        allByTeamId.forEach(player -> response.add(new StudentResponse(player)));
+        List<StudentResponseDto> response = new ArrayList<>();
+        allByTeamId.forEach(student -> response.add(new StudentResponseDto(student)));
         return response;
     }
     @Override
-    public List<StudentResponse> getAllPlayersWhichAreNotInTeam(Long teamId) {
+    public List<StudentResponseDto> getAllStudentsWhichAreNotInTeam(Long teamId) {
         List<Student> allStudents = studentRepository.findAll();
         List<Student> studentsNotFromThisTeam = allStudents.stream().filter(student -> student.getTeam() == null
                 || !student.getTeam().getId().equals(teamId)).collect(Collectors.toList());
-        List<StudentResponse> response = new ArrayList<>();
+        List<StudentResponseDto> response = new ArrayList<>();
         for (Student student : studentsNotFromThisTeam) {
-            response.add(new StudentResponse(student));
+            response.add(new StudentResponseDto(student));
         }
         return response;
     }
     @Override
-    public void addPStudentToAnotherTeam(Long teamId, Long studentId) {
+    public void addStudentToAnotherTeam(Long teamId, Long studentId) {
         Student student = studentRepository.findById(studentId).orElseThrow(NullPointerException::new);
         student.setTeam(teamRepository.findById(teamId).orElseThrow(NullPointerException::new));
         studentRepository.saveAndFlush(student);
     }
     @Override
-    public void removePlayerFromTeam(Long studentId) {
+    public void removeStudentFromTeam(Long studentId) {
         Student student = studentRepository.findById(studentId).orElseThrow(NullPointerException::new);
         student.setTeam(null);
         studentRepository.saveAndFlush(student);
     }
     @Override
-    public StudentResponse getPlayer(Long studentId) {
+    public StudentResponseDto getStudent(Long studentId) {
         Student student = studentRepository.findById(studentId).orElseThrow(NullPointerException::new);
         student.setMarks(student.getMarks().stream().filter(CommonMethods.distinctByKey(Mark::getId)).collect(Collectors.toList()));
-        return new StudentResponse(student);
+        return new StudentResponseDto(student);
     }
     @Override
-    public StudentResponse updatePlayer(Long studentId, StudentUpdateRequest updatePlayer, Map<String, String> form) {
+    public StudentResponseDto updateStudent(Long studentId, StudentUpdateRequestDto updateStudent, Map<String, String> form) {
         Student student = studentRepository.findById(studentId).orElseThrow(NullPointerException::new);
         student.setMarks(student.getMarks().stream().filter(CommonMethods.distinctByKey(Mark::getId)).collect(Collectors.toList()));
         List<Mark> markList = student.getMarks();
@@ -111,6 +118,6 @@ public class TeamServiceImpl implements TeamService {
         Optional.ofNullable(updatePlayer.getSalary()).ifPresent(student::setSalary);
         Optional.ofNullable(updatePlayer.getState()).ifPresent(student::setState);*/
 //        Optional.ofNullable(updatePlayer.getName()).ifPresent(student::set);
-        return new StudentResponse(studentRepository.saveAndFlush(student));
+        return new StudentResponseDto(studentRepository.saveAndFlush(student));
     }
 }

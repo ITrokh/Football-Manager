@@ -34,7 +34,7 @@
                     <input type="password" name="passwordConfirm"
                            class="form-control ${(passwordConfirmError??)?string('is-invalid', '')}"
                            placeholder="Retype password" />
-                    <#if password2Error??>
+                    <#if passwordConfirmError??>
                         <div class="invalid-feedback">
                             ${passwordConfirmError}
                         </div>
@@ -44,7 +44,7 @@
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Your full name:</label>
                 <div class="col-sm-6">
-                    <input type="text" name="fullName"
+                    <input type="text" name="fullName" value="<#if user??>${user.fullName}</#if>"
                            class="form-control ${(fullNameError??)?string('is-invalid', '')}"
                            placeholder="Input your full name" />
                     <#if fullNameError??>

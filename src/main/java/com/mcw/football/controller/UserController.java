@@ -8,7 +8,7 @@ package com.mcw.football.controller;
 
 import com.mcw.football.domain.Role;
 import com.mcw.football.domain.User;
-import com.mcw.football.domain.dto.StudentResponse;
+import com.mcw.football.domain.dto.StudentResponseDto;
 import com.mcw.football.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -58,7 +58,7 @@ public class UserController {
         model.addAttribute("username",user.getUsername());
         model.addAttribute("email",user.getEmail());
         if(user.isStudent()){
-            model.addAttribute("student",new StudentResponse(user.getStudent()));
+            model.addAttribute("student",new StudentResponseDto(user.getStudent()));
         }
         return "profile";
     }
