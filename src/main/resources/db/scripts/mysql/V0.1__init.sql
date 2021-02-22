@@ -63,6 +63,7 @@ create table DP_USER_SUBSCRIPTIONS (
 create table DP_MARK (
                          id bigint not null auto_increment,
                          mark varchar(255),
+                         createdDate tinyblob,
                          STUDENT_ID bigint not null,
                          primary key (id)
 );

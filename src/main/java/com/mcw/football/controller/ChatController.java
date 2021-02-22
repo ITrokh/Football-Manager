@@ -23,7 +23,7 @@ public class ChatController {
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public ChatMessageDto sendMessage(@Payload ChatMessageDto chatMessageDto) {
-        Message message = messageService.saveMessage(chatMessageDto);
+        var message = messageService.saveMessage(chatMessageDto);
         chatMessageDto.setId(message.getId());
         chatMessageDto.setUserId(message.getAuthor().getId());
         return chatMessageDto;
